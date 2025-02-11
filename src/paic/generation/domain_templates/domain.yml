@@ -1,0 +1,53 @@
+settings:
+  selection_mode: in_flow
+domains:
+  generic:
+    questions:
+      - id: g1
+        prompt: "What is the overall objective of your project?"
+  business:
+    threshold: 3
+    questions:
+      - id: b1
+        prompt: "Is this a business venture? (yes/no)"
+        weights:
+          business: 2
+      - id: b2
+        prompt: "Do you require market analysis? (yes/no)"
+        weights:
+          business: 2
+  retirement:
+    threshold: 2
+    questions:
+      - id: r1
+        prompt: "Is this related to retirement planning? (yes/no)"
+        weights:
+          retirement: 2
+  legal:
+    threshold: 2
+    questions:
+      - id: l1
+        prompt: "Do you need legal documents? (yes/no)"
+        weights:
+          legal: 2
+  health:
+    threshold: 2
+    questions:
+      - id: h1
+        prompt: "Is this related to health management? (yes/no)"
+        weights:
+          health: 2
+  programming:
+    threshold: 2
+    questions:
+      - id: p1
+        prompt: "Is this project about programming? (yes/no)"
+        weights:
+          programming: 2
+  inventions:
+    threshold: 2
+    questions:
+      - id: i1
+        prompt: "Are you working on an invention or new concept? (yes/no)"
+        weights:
+          inventions: 2

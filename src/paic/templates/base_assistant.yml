@@ -1,0 +1,24 @@
+base_assistant:
+  # Voice configuration
+  voice: "local"  # Options: local, realtime-tts, elevenlabs
+  elevenlabs_voice: "default"
+  brain: "default"
+
+  # Speech recognition
+  energy_threshold: 1000
+  record_timeout: 2.0
+  phrase_timeout: 3.0
+  sample_rate: 16000
+  model_size: "base"
+
+  # Response settings
+  response_style: "concise"
+  confirmation_required: true
+
+  # Session management
+  session_dir: "sessions"
+  history_file: "conversation_history.json"
+
+  # Logging
+  log_level: "INFO"
+  log_file: "logs/assistant.log"

@@ -1,0 +1,15 @@
+typer_assistant:
+  assistant_name: aiden
+  human_companion_name:
+  ears: realtime-stt
+  brain: deepseek-r1 # only deepseek-v3
+  voice: elevenlabs # local, elevenlabs
+  elevenlabs_model: eleven_monolingual_v1
+  elevenlabs_voice: WejK3H1m7MI9CHnIjW9K
+base_assistant:
+  assistant_name: aiden
+  human_companion_name:
+  ears: realtime-stt
+  brain: ollama:deepseek-r1 # deepseek-v3, ollama:phi4, ollama:<any installed model>
+  voice: local # local, elevenlabs
+  elevenlabs_voice: WejK3H1m7MI9CHnIjW9K

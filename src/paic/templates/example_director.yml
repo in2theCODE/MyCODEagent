@@ -1,0 +1,14 @@
+prompt: |
+  Create a simple Python function that:
+  1. Takes a list of numbers as input
+  2. Returns the sum of all even numbers in the list
+  3. Includes proper error handling
+  4. Has docstring and type hints
+
+coder_model: gpt-4
+evaluator_model: gpt-4o
+max_iterations: 3
+execution_command: uv run python {file}
+context_editable: []
+context_read_only: []
+evaluator: default

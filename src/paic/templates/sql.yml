@@ -1,0 +1,477 @@
+# check for a db if not create one
+
+
+def get_connection():
+    """Return a connection to the SQLite database."""
+    return sqlite3.connect(DB_NAME)
+
+
+def create_db_if_not_exists():
+    """Create tables if they do not exist and seed them with mock data."""
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # Create a sample 'users' table
+    cur.execute(
+        """
+    CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY,
+        username TEXT NOT NULL,
+        role TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """
+    )
+
+    # Create a sample 'tasks' table
+    cur.execute(
+        """
+    CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        task_name TEXT NOT NULL,
+        priority INTEGER NOT NULL,
+        status TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """
+    )
+
+    # Create a sample 'logs' table
+    cur.execute(
+        """
+    CREATE TABLE IF NOT EXISTS logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        message TEXT NOT NULL,
+        level TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """
+    )
+
+    def create_enhanced_tables(cur):
+        """Create new tables for enhanced functionality"""
+
+        # Projects table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS projects (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT,
+            status TEXT DEFAULT 'active',
+            priority INTEGER DEFAULT 1,
+            owner_id INTEGER,
+            start_date TEXT,
+            due_date TEXT,
+            completed_date TEXT,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (owner_id) REFERENCES users(id)
+        )
+        """)
+
+        # Goals table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS goals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            category TEXT,
+            status TEXT DEFAULT 'in_progress',
+            target_date TEXT,
+            completed_date TEXT,
+            project_id INTEGER,
+            owner_id INTEGER,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (project_id) REFERENCES projects(id),
+            FOREIGN KEY (owner_id) REFERENCES users(id)
+        )
+        """)
+
+        # Calendar Events table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS calendar_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            start_time TEXT NOT NULL,
+            end_time TEXT,
+            location TEXT,
+            event_type TEXT,
+            recurring TEXT,
+            project_id INTEGER,
+            created_by INTEGER,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (project_id) REFERENCES projects(id),
+            FOREIGN KEY (created_by) REFERENCES users(id)
+        )
+        """)
+
+        # Task Dependencies table (for existing tasks)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS task_dependencies (
+            task_id INTEGER,
+            dependent_on_id INTEGER,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (task_id, dependent_on_id),
+            FOREIGN KEY (task_id) REFERENCES tasks(id),
+            FOREIGN KEY (dependent_on_id) REFERENCES tasks(id)
+        )
+        """)
+
+        # Project-Task Association table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS project_tasks (
+            project_id INTEGER,
+            task_id INTEGER,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (project_id, task_id),
+            FOREIGN KEY (project_id) REFERENCES projects(id),
+            FOREIGN KEY (task_id) REFERENCES tasks(id)
+        )
+        """)
+
+        # Tags table for flexible categorization
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS tags (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            created_at TEXT NOT NULL
+        )
+        """)
+
+        # Tag associations table (for projects, goals, tasks)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS tag_associations (
+            tag_id INTEGER,
+            item_id INTEGER,
+            item_type TEXT NOT NULL,  -- 'project', 'goal', 'task', or 'event'
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (tag_id, item_id, item_type),
+            FOREIGN KEY (tag_id) REFERENCES tags(id)
+        )
+        """)
+
+def init_database():
+    """Initialize the PostgreSQL database and create required tables."""
+    try:
+        conn = get_db_connection()
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cur = conn.cursor()
+
+        # Create users table first since others reference it
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username TEXT NOT NULL,
+            email TEXT UNIQUE,
+            password_hash TEXT,
+            role TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
+        # Create base tables
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS tasks (
+            id SERIAL PRIMARY KEY,
+            task_name TEXT NOT NULL,
+            description TEXT,
+            priority INTEGER NOT NULL DEFAULT 1,
+            status TEXT NOT NULL DEFAULT 'pending',
+            owner_id INTEGER REFERENCES users(id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS logs (
+            id SERIAL PRIMARY KEY,
+            message TEXT NOT NULL,
+            level TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
+        # Projects table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS projects (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT,
+            status TEXT DEFAULT 'active',
+            priority INTEGER DEFAULT 1,
+            owner_id INTEGER REFERENCES users(id),
+            start_date TIMESTAMP,
+            due_date TIMESTAMP,
+            completed_date TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
+        # Goals table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS goals (
+            id SERIAL PRIMARY KEY,
+            title TEXT NOT NULL,
+            description TEXT,
+            category TEXT,
+            status TEXT DEFAULT 'in_progress',
+            target_date TIMESTAMP,
+            completed_date TIMESTAMP,
+            project_id INTEGER REFERENCES projects(id),
+            owner_id INTEGER REFERENCES users(id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
+        # Calendar Events table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS calendar_events (
+            id SERIAL PRIMARY KEY,
+            title TEXT NOT NULL,
+            description TEXT,
+            start_time TIMESTAMP NOT NULL,
+            end_time TIMESTAMP,
+            location TEXT,
+            event_type TEXT,
+            recurring TEXT,
+            project_id INTEGER REFERENCES projects(id),
+            created_by INTEGER REFERENCES users(id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
+        # Task Dependencies table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS task_dependencies (
+            task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
+            dependent_on_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (task_id, dependent_on_id)
+        )
+        """)
+
+        # Project-Task Association table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS project_tasks (
+            project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+            task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (project_id, task_id)
+        )
+        """)
+
+        # Tags table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS tags (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL UNIQUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
+        # Tag associations table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS tag_associations (
+            tag_id INTEGER REFERENCES tags(id) ON DELETE CASCADE,
+            item_id INTEGER NOT NULL,
+            item_type TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (tag_id, item_id, item_type)
+        )
+        """)
+
+        # Create indexes
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status)")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_tasks_owner ON tasks(owner_id)")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status)")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner_id)")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_tags_name ON tags(name)")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_calendar_events_start ON calendar_events(start_time)")
+
+        conn.commit()
+        cur.close()
+        conn.close()
+        return True
+    except Exception as e:
+        typer.echo(f"❌ Database initialization error: {str(e)}")
+        return False
+
+
+def validate_db_config():
+    """Validate database configuration."""
+    required_vars = ["SUPABASE_HOST", "SUPABASE_DATABASE", "SUPABASE_USER", "SUPABASE_PASSWORD"]
+    missing = [var for var in required_vars if not os.getenv(var)]
+
+    if missing:
+        return False, f"Missing environment variables: {', '.join(missing)}"
+
+    try:
+        conn = get_db_connection()
+        conn.close()
+        return True, "Database configuration is valid"
+    except Exception as e:
+        return False, f"Database connection failed: {str(e)}"
+
+
+def create_env_template():
+    """Create a template for the .env file."""
+    return """# Supabase Configuration
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_api_key
+SUPABASE_HOST=your_supabase_host
+SUPABASE_DATABASE=postgres
+SUPABASE_USER=your_database_user
+SUPABASE_PASSWORD=your_database_password
+
+# Application Configuration
+APP_SECRET_KEY=generate_a_secret_key_here
+"""
+
+def get_connection():
+    """Return a connection to the SQLite database."""
+    return sqlite3.connect(DB_NAME)
+
+
+def create_db_if_not_exists():
+    """Create tables if they do not exist and seed them with mock data."""
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # Create a sample 'users' table
+    cur.execute(
+        """
+    CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY,
+        username TEXT NOT NULL,
+        role TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """
+    )
+
+    # Create a sample 'tasks' table
+    cur.execute(
+        """
+    CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        task_name TEXT NOT NULL,
+        priority INTEGER NOT NULL,
+        status TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """
+    )
+
+    # Create a sample 'logs' table
+    cur.execute(
+        """
+    CREATE TABLE IF NOT EXISTS logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        message TEXT NOT NULL,
+        level TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """
+    )
+
+    def create_enhanced_tables(cur):
+        """Create new tables for enhanced functionality"""
+
+        # Projects table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS projects (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT,
+            status TEXT DEFAULT 'active',
+            priority INTEGER DEFAULT 1,
+            owner_id INTEGER,
+            start_date TEXT,
+            due_date TEXT,
+            completed_date TEXT,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (owner_id) REFERENCES users(id)
+        )
+        """)
+
+        # Goals table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS goals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            category TEXT,
+            status TEXT DEFAULT 'in_progress',
+            target_date TEXT,
+            completed_date TEXT,
+            project_id INTEGER,
+            owner_id INTEGER,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (project_id) REFERENCES projects(id),
+            FOREIGN KEY (owner_id) REFERENCES users(id)
+        )
+        """)
+
+        # Calendar Events table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS calendar_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            start_time TEXT NOT NULL,
+            end_time TEXT,
+            location TEXT,
+            event_type TEXT,
+            recurring TEXT,
+            project_id INTEGER,
+            created_by INTEGER,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (project_id) REFERENCES projects(id),
+            FOREIGN KEY (created_by) REFERENCES users(id)
+        )
+        """)
+
+        # Task Dependencies table (for existing tasks)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS task_dependencies (
+            task_id INTEGER,
+            dependent_on_id INTEGER,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (task_id, dependent_on_id),
+            FOREIGN KEY (task_id) REFERENCES tasks(id),
+            FOREIGN KEY (dependent_on_id) REFERENCES tasks(id)
+        )
+        """)
+
+        # Project-Task Association table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS project_tasks (
+            project_id INTEGER,
+            task_id INTEGER,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (project_id, task_id),
+            FOREIGN KEY (project_id) REFERENCES projects(id),
+            FOREIGN KEY (task_id) REFERENCES tasks(id)
+        )
+        """)
+
+        # Tags table for flexible categorization
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS tags (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            created_at TEXT NOT NULL
+        )
+        """)
+
+        # Tag associations table (for projects, goals, tasks)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS tag_associations (
+            tag_id INTEGER,
+            item_id INTEGER,
+            item_type TEXT NOT NULL,  -- 'project', 'goal', 'task', or 'event'
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (tag_id, item_id, item_type),
+            FOREIGN KEY (tag_id) REFERENCES tags(id)
+        )
+        """)

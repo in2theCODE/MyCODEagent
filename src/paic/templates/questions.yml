@@ -1,0 +1,35 @@
+project_discovery:
+  - id: project_type
+    question: "What type of project are you building?"
+    type: select
+    options:
+      - web_application
+      - cli_tool
+      - library
+      - api_service
+
+  - id: architecture_patterns
+    question: "Which architectural patterns are you interested in using?"
+    type: multiselect
+    options:
+      - microservices
+      - layered
+      - event_driven
+      - modular_monolith
+
+  - id: tech_stack
+    question: "What's your primary tech stack?"
+    type: multiselect
+    options:
+      - python_fastapi
+      - python_flask
+      - python_django
+      - javascript_node
+
+  - id: documentation_level
+    question: "What level of documentation do you need?"
+    type: select
+    options:
+      - minimal
+      - standard
+      - comprehensive

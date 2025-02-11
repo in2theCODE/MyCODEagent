@@ -1,0 +1,40 @@
+version: "1.0"
+voice_commands:
+  - name: "create_project"
+    voice_triggers:
+      - "create a new project"
+      - "make a project"
+      - "start a project"
+    description: "Creates a new project with specified details"
+    parameters:
+      - name: "name"
+        type: "str"
+        required: true
+        voice_prompt: "What would you like to name the project?"
+        validation_regex: "^[a-zA-Z0-9_-]+$"
+      - name: "description"
+        type: "str"
+        required: false
+        voice_prompt: "Please provide a project description"
+    confirmation_required: true
+    confirmation_prompt: "Should I create a project named {name} with description {description}?"
+    success_message: "Project {name} has been created successfully"
+    error_message: "Sorry, I couldn't create the project. {error}"
+
+  - name: "list_tasks"
+    voice_triggers:
+      - "show my tasks"
+      - "list all tasks"
+      - "what are my tasks"
+    description: "Lists all tasks"
+    parameters:
+      - name: "status"
+        type: "str"
+        required: false
+        voice_prompt: "Would you like to filter by status? Say 'all', 'pending', or 'completed'"
+        options:
+          - "all"
+          - "pending"
+          - "completed"
+    confirmation_required: false
+    success_message: "Here are your tasks"

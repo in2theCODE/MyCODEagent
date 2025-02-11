@@ -1,0 +1,57 @@
+assistants:
+  aiden:  # Default assistant
+    name: aiden
+    human_companion_name: null
+    voice:
+      type: local  # local, elevenlabs, realtime-tts
+      elevenlabs_voice: WejK3H1m7MI9CHnIjW9K
+      elevenlabs_model: eleven_monolingual_v1
+    
+    speech_recognition:
+      type: realtime-stt
+      energy_threshold: 1000
+      record_timeout: 2.0
+      phrase_timeout: 3.0
+      sample_rate: 16000
+      model_size: base
+    
+    agents:
+      conversation:
+        type: conversation
+        model_name: gpt-4  # gpt-4, gpt-3.5-turbo, claude-3-opus, claude-3-sonnet, ollama:phi4
+        temperature: 0.7
+        max_tokens: 1000
+        system_prompt: "You are a helpful voice assistant named aiden."
+        conversation_style: casual
+        max_history: 10
+      
+      task:
+        type: task
+        model_name: local
+        allowed_operations:
+          - read_file
+          - write_file
+          - list_directory
+        workspace_path: .
+    
+    logging:
+      level: INFO
+      file: logs/assistant.log
+    
+    session:
+      dir: sessions
+      history_file: conversation_history.json
+
+paths:
+  templates: aiden/templates
+  config: config
+  logs: logs
+  sessions: sessions
+
+api_keys:  # These should be in .env file, shown here for documentation
+  openai: ${OPENAI_API_KEY}
+  anthropic: ${ANTHROPIC_API_KEY}
+  elevenlabs: ${ELEVEN_API_KEY}
+  supabase:
+    url: ${SUPABASE_URL}
+    key: ${SUPABASE_KEY}

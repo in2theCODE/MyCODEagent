@@ -1,0 +1,220 @@
+settings:
+  selection_mode: in_flow
+domains:
+  generic:
+    questions:
+      - id: g1
+        prompt: "What is the overall objective of your project?"
+  business:
+    threshold: 3
+    questions:
+      - id: b1
+        prompt: "Is this a business venture? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          business: 2
+      - id: b2
+        prompt: "Do you require market analysis? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          business: 2
+  retirement:
+    threshold: 2
+    questions:
+      - id: r1
+        prompt: "Is this related to retirement planning? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          retirement: 2
+  legal:
+    threshold: 2
+    questions:
+      - id: l1
+        prompt: "Do you need legal documents? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          legal: 2
+  health:
+    threshold: 2
+    questions:
+      - id: h1
+        prompt: "Is this related to health management? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          health: 2
+  programming:
+    threshold: 2
+    questions:
+      - id: p1
+        prompt: "Is this project about programming? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          programming: 2
+  inventions:
+    threshold: 2
+    questions:
+      - id: i1
+        prompt: "Are you working on an invention or new concept? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          inventions: 2
+  marketing:
+    threshold: 2
+    questions:
+      - id: m1
+        prompt: "Is this project focused on marketing strategies? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          marketing: 2
+  finance:
+    threshold: 2
+    questions:
+      - id: f1
+        prompt: "Does this involve financial planning or analysis? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          finance: 2
+  education:
+    threshold: 2
+    questions:
+      - id: e1
+        prompt: "Is this project related to education or learning? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          education: 2
+  research:
+    threshold: 2
+    questions:
+      - id: r2
+        prompt: "Is this project research-oriented? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          research: 2
+  entertainment:
+    threshold: 2
+    questions:
+      - id: ent1
+        prompt: "Is this project in the entertainment industry? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          entertainment: 2
+  real_estate:
+    threshold: 2
+    questions:
+      - id: re1
+        prompt: "Does this involve real estate ventures? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          real_estate: 2
+  travel:
+    threshold: 2
+    questions:
+      - id: t1
+        prompt: "Is this project related to travel or tourism? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          travel: 2
+  food:
+    threshold: 2
+    questions:
+      - id: f2
+        prompt: "Is this about food, dining, or culinary ventures? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          food: 2
+  sustainability:
+    threshold: 2
+    questions:
+      - id: s1
+        prompt: "Is sustainability a focus of this project? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          sustainability: 2
+  art:
+    threshold: 2
+    questions:
+      - id: a1
+        prompt: "Is this project related to art or creative expression? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          art: 2
+  design:
+    threshold: 2
+    questions:
+      - id: d1
+        prompt: "Is design a key element of your project? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          design: 2
+  gaming:
+    threshold: 2
+    questions:
+      - id: g2
+        prompt: "Is this project in the gaming industry? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          gaming: 2
+  social_media:
+    threshold: 2
+    questions:
+      - id: sm1
+        prompt: "Is social media a component of this project? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          social_media: 2
+  customer_support:
+    threshold: 2
+    questions:
+      - id: cs1
+        prompt: "Does this involve customer support or service? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          customer_support: 2
+  hr:
+    threshold: 2
+    questions:
+      - id: hr1
+        prompt: "Is human resources a focus of your project? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          hr: 2
+  project_management:
+    threshold: 2
+    questions:
+      - id: pm1
+        prompt: "Does this project require project management tools? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          project_management: 2
+  cybersecurity:
+    threshold: 2
+    questions:
+      - id: c1
+        prompt: "Is cybersecurity an essential part of this project? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          cybersecurity: 2
+  logistics:
+    threshold: 2
+    questions:
+      - id: l2
+        prompt: "Is logistics management a component of this project? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          logistics: 2
+  ecommerce:
+    threshold: 2
+    questions:
+      - id: ec1
+        prompt: "Is this an e-commerce project? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          ecommerce: 2
+  fashion:
+    threshold: 2
+    questions:
+      - id: f3
+        prompt: "Is fashion a focus of your project? (yes/no)"
+        positive: ["yes","y"]
+        weights:
+          fashion: 2

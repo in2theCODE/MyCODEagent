@@ -1,0 +1,1 @@
+aiden --model deepseek/deepseek-chat --architect --editor-model deepseek/deepseek-chat --yes-always --no-detect-urls --load .aiden
