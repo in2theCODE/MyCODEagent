@@ -181,6 +181,7 @@ dist
 __pycache__/
 
 .venv/
+.env
 
 apps/marimo-prompt-library/prompt_executions
 
